@@ -28,7 +28,7 @@ class RAGPreretriever:
             corpus=corpus, 
             vectorizer_type="bailian", 
             bailian_api_key="sk-a1ed3a6082aa4db3b9a5e390805a0ddd", 
-            embedding_dir='/data0/home/qwen/thgu/PreRAG/data/embedding/hotpot_corpus_embeddings'
+            embedding_dir='your_embedding_dir'
         )
         self.llm_call_func = llm_call_func
         self.corpus = corpus  # Store corpus for later use
@@ -225,45 +225,5 @@ Answer strictly with one word: Yes or No.
 
         return anchors
     
-if __name__ == "__main__":
-    with open("/data0/thgu/query-decomposition/RAG/data/musique_data/musique_ans_v1.0_train.jsonl", "r", encoding='utf-8') as infile:
-        for i, line in enumerate(infile):
-            if i > 3:
-                break
-            data = json.loads(line.strip())
-    sample_corpus = [{"id": paragraph["idx"], "text": paragraph["paragraph_text"]} for paragraph in data["paragraphs"]]
-
-    # # 示例语料库
-    # sample_corpus = [
-    #     {"id": 1, "text": "The Scarecrow Oz character Illustration by W.W. Denslow from The Wonderful Wizard of Oz First appearance The Wonderful Wizard of Oz (1900) Created by L. Frank Baum Portrayed by Ray Bolger Voiced by Paul Scheer (Once Upon a Time) Information Aliases Socrates Strawman Chang Wang Woe Fiyero Tigelaar Species Scarecrow Gender Male Occupation Ruler of Oz Tin Woodman's treasurer Corn farmer Title His Majesty the Scarecrow Royal Treasurer Emperor of the Silver Islands Spouse (s) Tsing Tsing (in his former incarnation) Children 3 sons 15 grandsons (from his former incarnation)"},
-    #     {"id": 2, "text": "The player assumes control of a character referred to as the ``Sole Survivor '', who emerges from a long - term cryogenic stasis in Vault 111, an underground nuclear fallout shelter. After witnessing the murder of their spouse and kidnapping of their son, the Sole Survivor ventures out into the Commonwealth to search for their missing child. The player explores the game's dilapidated world, complete various quests, help out factions, and acquire experience points to level up and increase the abilities of their character. New features to the series include the ability to develop and manage settlements, and an extensive crafting system where materials scavenged from the environment can be used to craft drugs and explosives, upgrade weapons and armor, and construct, furnish and improve settlements. Fallout 4 also marks the first game in the series to feature full voice acting for the protagonist."},
-    #     {"id": 3, "text": "Dave Fennoy Fennoy in Phoenix, Arizona David Henderson Fennoy (1952 - 01 - 20) January 20, 1952 (age 65) Silver Spring, Maryland, U.S. Nationality American Occupation Voice actor Years active 1990 -- present Known for The Walking Dead as Lee Everett Minecraft: Story Mode as Gabriel the Warrior Spouse (s) Monique Fennoy Children Michelle Fennoy"},
-    #     {"id": 4, "text": "William Everett ``Bud ''Luckey (July 28, 1934 -- February 24, 2018) was an American animator and actor. He best known for his work at Pixar, where he worked as a character designer on a number of films, including Toy Story, Boundin ', Toy Story 2, A Bug's Life, Monsters, Inc., Finding Nemo, Cars and Ratatouille. Luckey was also known as the voice of Rick Dicker in The Incredibles, Chuckles the Clown in Toy Story 3 and as Eeyore in the 2011 Winnie the Pooh film."},
-    #     {"id": 5, "text": "Pointless Nostalgic is Jamie Cullum's second album but his first major release on a record label. It was released in 2002 through Candid Records. It was recorded at Clowns Pocket Recording Studio, Bexley, Kent by Derek Nash who also co produced the CD."}
-    # ]
-    
-    # 初始化文本匹配器
-    pre_retriever = RAGPreretriever(sample_corpus)
-    
-    # # 执行查询
-    # query = "Who is the spouse of krusty the clown's voice actor?"
-    query = data["question"]
-    print(query)
-
-    # 建立Perceptor实例
-    perceptor = RAGPerceptor()
-    
-    # 提取query关键词
-    item = perceptor.extract(query)
-    entities = item['keywords']
-    print(entities)
-
-    results = pre_retriever.search(query)
-    
-    print(pre_retriever.tcr(results, entities))
-
-    anchors = pre_retriever.count_hit_keywords(results, entities)
-
-    print(anchors)
         
 
